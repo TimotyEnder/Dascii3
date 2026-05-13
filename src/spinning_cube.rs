@@ -23,7 +23,7 @@ impl GameObjectImpl for SpinningCube {
     fn on_start(&mut self) {}
 
     fn on_update(&mut self, delta_time: f32) {
-        self.cube.rotate(0.0, 1.0, 0.0);
+        self.cube.rotate(0.0, 0.0, 0.0);
     }
 }
 impl_gameobject! {SpinningCube}

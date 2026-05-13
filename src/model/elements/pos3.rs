@@ -54,45 +54,32 @@ impl Pos3 {
     pub fn rotate(&mut self, angle_x: f64, angle_y: f64, angle_z: f64) {
         // Rotate around X axis
         self.rotate_x(angle_x);
-
         // Rotate around Y axis
         self.rotate_y(angle_y);
-
         // Rotate around Z axis
         self.rotate_z(angle_z);
     }
-    fn rotate_x(&self, angle: f64) -> Self {
+    fn rotate_x(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
 
-        Self {
-            x: self.x,
-            y: self.y * cos - self.z * sin,
-            z: self.y * sin + self.z * cos,
-        }
+        // self.x = self.x;
+        self.y = self.y * cos - self.z * sin;
+        self.z = self.y * sin + self.z * cos;
     }
-
-    // Rotate around Y axis (Yaw)
-    fn rotate_y(&self, angle: f64) -> Self {
+    fn rotate_y(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
-
-        Self {
-            x: self.x * cos + self.z * sin,
-            y: self.y,
-            z: -self.x * sin + self.z * cos,
-        }
+        self.x = self.x * cos + self.z * sin;
+        // self.y = self.y;
+        self.z = -self.x * sin + self.z * cos;
     }
-
-    // Rotate around Z axis (Roll)
-    fn rotate_z(&self, angle: f64) -> Self {
+    fn rotate_z(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
 
-        Self {
-            x: self.x * cos - self.y * sin,
-            y: self.x * sin + self.y * cos,
-            z: self.z,
-        }
+        self.x = self.x * cos - self.y * sin;
+        self.y = self.x * sin + self.y * cos;
+        // self.z = self.z;
     }
 }
