@@ -1,5 +1,7 @@
 use crate::{
-    impl_gameobject, model::objects::line::Line, screenspace::elements::drawable::Drawable,
+    impl_gameobject,
+    model::objects::line::Line,
+    screenspace::elements::{drawable::Drawable, screenspace_position::ScreenPosition},
 };
 
 pub struct SpinningLine {
@@ -16,8 +18,8 @@ impl GameObjectImpl for SpinningLine {
     fn on_update(&mut self, delta_time: &f64) {}
 }
 impl Drawable for SpinningLine {
-    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) {
-        self.line.draw(screen);
+    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> Vec<ScreenPosition> {
+        self.line.draw(screen)
     }
 
     fn position(&self) -> crate::model::elements::pos3::Pos3 {

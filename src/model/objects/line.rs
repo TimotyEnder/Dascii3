@@ -32,42 +32,6 @@ impl Line {
             color: *color,
         }
     }
-    fn distanceVector(from: &ScreenPosition, to: &ScreenPosition) -> (f64, f64) {
-        let diffVector = (
-            (to.x() as isize) - (from.x() as isize),
-            (to.y() as isize) - (from.y() as isize),
-        );
-        let magnitude = ((diffVector.0 as f64).powi(2) + (diffVector.1 as f64).powi(2)).sqrt();
-        (
-            diffVector.0 as f64 / magnitude,
-            diffVector.1 as f64 / magnitude,
-        )
-    }
-    //TODO: change to Bresenham's line algorithm
-    fn move_pos_towards_dir(x_dir: &f64, y_dir: &f64, pos: &mut ScreenPosition) {
-        if (x_dir.abs() - y_dir.abs()).abs() < 0.5 {
-            match *y_dir {
-                n if n < 0.0 => pos.set_y(&(pos.y() - 1)),
-                _ => pos.set_y(&(pos.y() + 1)),
-            };
-            match *x_dir {
-                n if n < 0.0 => pos.set_x(&(pos.x() - 1)),
-                _ => pos.set_x(&(pos.x() + 1)),
-            };
-        } else if x_dir.abs() > y_dir.abs() {
-            if *x_dir > 0.0 {
-                pos.set_x(&(pos.x() + 1));
-            } else {
-                pos.set_x(&(pos.x() - 1));
-            }
-        } else {
-            if *y_dir > 0.0 {
-                pos.set_y(&(pos.y() + 1));
-            } else {
-                pos.set_y(&(pos.y() - 1));
-            }
-        }
-    }
     fn mid_point(&self) -> Pos3 {
         Pos3::new(
             &(self.from.x() + self.to.x() / 2.0),
@@ -81,7 +45,7 @@ impl Line {
         from: &ScreenPosition,
         to: &ScreenPosition,
         screen: &mut Screen,
-    ) {
+    ) -> Vec<ScreenPosition> {
         let dx = (to.x() as isize - from.x() as isize).abs(); //total x distance
         let dy = (to.y() as isize - from.y() as isize).abs(); //total y distance
         let sx = if to.x() >= from.x() { 1 } else { -1 }; //step for x
@@ -89,12 +53,13 @@ impl Line {
         let mut err = dx - dy; //deviation from mathematical line and actual pixel position, decides next movement
         let mut x = from.x() as isize;
         let mut y = from.y() as isize;
-
+        let mut colored_pos = Vec::new();
+        colored_pos.push(*from);
         loop {
-            screen.color_cell(
-                &ScreenPosition::with_pos(&(x as usize), &(y as usize)),
-                &self.color,
-            );
+            let to_color = ScreenPosition::with_pos(&(x as usize), &(y as usize));
+            colored_pos.push(to_color);
+            screen.color_cell(&to_color, &self.color);
+
             if x == to.x() as isize && y == to.y() as isize {
                 break;
             }
@@ -112,20 +77,14 @@ impl Line {
                 y += sy;
             }
         }
+        colored_pos
     }
 }
 impl Drawable for Line {
-    fn draw(&self, screen: &mut Screen) {
+    fn draw(&self, screen: &mut Screen) -> Vec<ScreenPosition> {
         let from_pos: ScreenPosition = screen.project_point(&self.from);
         let to_pos: ScreenPosition = screen.project_point(&self.to);
-        // screen.color_cell(&from_pos, &self.color);
-        // let mut cur_pos = from_pos;
-        // while (cur_pos != to_pos) {
-        //     let (x_dir, y_dir) = Self::distanceVector(&cur_pos, &to_pos);
-        //     Self::move_pos_towards_dir(&x_dir, &y_dir, &mut cur_pos);
-        //     screen.color_cell(&cur_pos, &self.color);
-        // }
-        self.bresenham_line_algorithm(&from_pos, &to_pos, screen);
+        self.bresenham_line_algorithm(&from_pos, &to_pos, screen)
     }
 
     fn position(&self) -> Pos3 {

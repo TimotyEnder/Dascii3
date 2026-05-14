@@ -29,9 +29,10 @@ impl Dot {
     }
 }
 impl Drawable for Dot {
-    fn draw(&self, screen: &mut Screen) {
+    fn draw(&self, screen: &mut Screen) -> Vec<ScreenPosition> {
         let screen_pos: ScreenPosition = screen.project_point(&self.position);
         screen.color_cell(&screen_pos, &self.color);
+        vec![screen_pos]
     }
 
     fn position(&self) -> Pos3 {

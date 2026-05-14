@@ -1,5 +1,7 @@
 use crate::{
-    impl_gameobject, model::objects::cube::Cube, screenspace::elements::drawable::Drawable,
+    impl_gameobject,
+    model::objects::cube::Cube,
+    screenspace::elements::{drawable::Drawable, screenspace_position::ScreenPosition},
 };
 
 pub struct SpinningCube {
@@ -11,8 +13,8 @@ impl SpinningCube {
     }
 }
 impl Drawable for SpinningCube {
-    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) {
-        self.cube.draw(screen);
+    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> Vec<ScreenPosition> {
+        self.cube.draw(screen)
     }
 
     fn position(&self) -> crate::model::elements::pos3::Pos3 {
