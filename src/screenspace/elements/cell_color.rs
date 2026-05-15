@@ -15,6 +15,11 @@ impl CellColor {
         b: 255 as u8,
         g: 255 as u8,
     };
+    pub const RED: CellColor = CellColor {
+        r: 255 as u8,
+        b: 0 as u8,
+        g: 0 as u8,
+    };
     pub fn from_rgb(r: &u8, g: &u8, b: &u8) -> Self {
         Self {
             r: *r,

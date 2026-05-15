@@ -4,6 +4,7 @@ use crate::{
         objects::{cube::Cube, dot::Dot, line::Line},
     },
     scene::Scene,
+    screenspace::elements::cell_color::CellColor,
     spinning_cube::SpinningCube,
     spinning_line::SpinningLine,
 };
@@ -23,9 +24,11 @@ fn main() {
     //     &Pos3::new(&0.0, &0.0, &20.0),
     //     5 as usize,
     // )));
-    scene.add_object(Box::new(SpinningCube::new(Cube::from_center(
+    scene.add_object(Box::new(SpinningCube::new(Cube::from_center_filled(
         &Pos3::new(&0.0, &0.0, &20.0),
         4 as usize,
+        &CellColor::WHITE,
+        &CellColor::RED,
     ))));
     // scene.add_object(Box::new(SpinningLine::new(Line::from_to(
     //     &Pos3::new(&-10.0, &-5.0, &100.0),

@@ -1,4 +1,5 @@
 use std::cmp::{Ordering, max};
+use std::collections::HashSet;
 
 use crate::{
     model::elements::pos3::{self, Pos3},
@@ -45,7 +46,7 @@ impl Line {
         from: &ScreenPosition,
         to: &ScreenPosition,
         screen: &mut Screen,
-    ) -> Vec<ScreenPosition> {
+    ) -> HashSet<ScreenPosition> {
         let dx = (to.x() as isize - from.x() as isize).abs(); //total x distance
         let dy = (to.y() as isize - from.y() as isize).abs(); //total y distance
         let sx = if to.x() >= from.x() { 1 } else { -1 }; //step for x
@@ -53,11 +54,11 @@ impl Line {
         let mut err = dx - dy; //deviation from mathematical line and actual pixel position, decides next movement
         let mut x = from.x() as isize;
         let mut y = from.y() as isize;
-        let mut colored_pos = Vec::new();
-        colored_pos.push(*from);
+        let mut colored_pos = HashSet::new();
+        colored_pos.insert(*from);
         loop {
             let to_color = ScreenPosition::with_pos(&(x as usize), &(y as usize));
-            colored_pos.push(to_color);
+            colored_pos.insert(to_color);
             screen.color_cell(&to_color, &self.color);
 
             if x == to.x() as isize && y == to.y() as isize {
@@ -81,7 +82,7 @@ impl Line {
     }
 }
 impl Drawable for Line {
-    fn draw(&self, screen: &mut Screen) -> Vec<ScreenPosition> {
+    fn draw(&self, screen: &mut Screen) -> HashSet<ScreenPosition> {
         let from_pos: ScreenPosition = screen.project_point(&self.from);
         let to_pos: ScreenPosition = screen.project_point(&self.to);
         self.bresenham_line_algorithm(&from_pos, &to_pos, screen)

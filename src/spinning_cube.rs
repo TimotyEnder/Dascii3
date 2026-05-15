@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{
     impl_gameobject,
     model::objects::cube::Cube,
@@ -13,7 +15,10 @@ impl SpinningCube {
     }
 }
 impl Drawable for SpinningCube {
-    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> Vec<ScreenPosition> {
+    fn draw(
+        &self,
+        screen: &mut crate::screenspace::screen::screen::Screen,
+    ) -> HashSet<ScreenPosition> {
         self.cube.draw(screen)
     }
 

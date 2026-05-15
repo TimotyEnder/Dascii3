@@ -1,12 +1,18 @@
-use std::{cell::Cell, io::Cursor, vec};
+use std::{
+    cmp::{max, min},
+    collections::HashSet,
+};
 
 use crate::{
     model::{
         elements::pos3::Pos3,
         objects::{dot::Dot, line::Line},
     },
-    screenspace::elements::{
-        cell_color::CellColor, drawable::Drawable, screenspace_position::ScreenPosition,
+    screenspace::{
+        elements::{
+            cell_color::CellColor, drawable::Drawable, screenspace_position::ScreenPosition,
+        },
+        screen::screen::Screen,
     },
 };
 
@@ -109,35 +115,56 @@ impl Cube {
         let z = corner.z() + center.z();
         *corner = Pos3::new(&x, &y, &z);
     }
-    fn draw_face(
-        top_left: &ScreenPosition,
-        top_right: &ScreenPosition,
-        bottom_right: &ScreenPosition,
-        bottom_left: &ScreenPosition,
-        other_colored_cells: &Vec<ScreenPosition>,
+    fn fill_triangle(
+        one: &ScreenPosition,
+        two: &ScreenPosition,
+        three: &ScreenPosition,
         fill_color: &CellColor,
-    ) -> Vec<ScreenPosition> {
-        let colored_cells = Vec::new();
-        let top_point = if top_left.y() > top_right.y() {
-            top_left
-        } else {
-            top_right
-        };
-        let bottom_point = if bottom_left.y() < bottom_right.y() {
-            bottom_left
-        } else {
-            bottom_right
-        };
-        let mut y = top_point.y();
-        while (y >= bottom_point.y()) {
-            y -= 1;
+        screen: &mut Screen,
+    ) -> HashSet<ScreenPosition> {
+        let mut colored_cells = HashSet::new();
+        let min_x = min(min(one.x(), two.x()), three.x());
+        let min_y = min(min(one.y(), two.y()), three.y());
+        let max_x = max(max(one.x(), two.x()), three.x());
+        let max_y = max(max(one.y(), two.y()), three.y());
+        for x in min_x..max_x {
+            for y in min_y..max_y {
+                let cur_pos = ScreenPosition::with_pos(&x, &y);
+                if Self::point_inside_triangle(one, two, three, &cur_pos) {
+                    screen.color_cell(&cur_pos, fill_color);
+                    colored_cells.insert(cur_pos);
+                }
+            }
         }
         colored_cells
     }
+    fn point_inside_triangle(
+        p1: &ScreenPosition,
+        p2: &ScreenPosition,
+        p3: &ScreenPosition,
+        point: &ScreenPosition,
+    ) -> bool {
+        let denominator: f64 = (p2.y() as f64 - p3.y() as f64) * (p1.x() as f64 - p3.x() as f64)
+            + (p3.x() as f64 - p2.x() as f64) * (p1.y() as f64 - p3.y() as f64);
+        if denominator == 0.0 {
+            return false;
+        }
+        let a = ((p2.y() as f64 - p3.y() as f64) * (point.x() as f64 - p3.x() as f64)
+            + (p3.x() as f64 - p2.x() as f64) * (point.y() as f64 - p3.y() as f64))
+            / denominator;
+        let b = ((p3.y() as f64 - p1.y() as f64) * (point.x() as f64 - p3.x() as f64)
+            + (p1.x() as f64 - p3.x() as f64) * (point.y() as f64 - p3.y() as f64))
+            / denominator;
+        let c = 1.0 - a - b;
+        a >= 0.0 && a <= 1.0 && b >= 0.0 && b <= 1.0 && c >= 0.0 && c <= 1.0
+    }
 }
 impl Drawable for Cube {
-    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> Vec<ScreenPosition> {
-        let mut colored_cells = Vec::new();
+    fn draw(
+        &self,
+        screen: &mut crate::screenspace::screen::screen::Screen,
+    ) -> HashSet<ScreenPosition> {
+        let mut colored_cells = HashSet::new();
         let edges = [
             // back face (z = cz+s): 0--2, 2--6, 6--4, 4--0
             (0, 2),
@@ -169,25 +196,37 @@ impl Drawable for Cube {
             // Bottom face
             (0, 2, 3, 1), // back-bottom-left, back-bottom-right, front-bottom-right, front-bottom-left
         ];
-
-        for &(from, to) in &edges {
-            let line = Line::from_to(&self.corners[from], &self.corners[to]);
-            for cell in line.draw(screen) {
-                colored_cells.push(cell);
-            }
-        }
+        //face filling with triangles
         if let Some(color) = self.fill_color {
             for &(top_left, top_right, bottom_right, bottom_left) in &faces {
-                for cell in Self::draw_face(
+                // Triangle 1: top half
+                for cell in Self::fill_triangle(
                     &screen.project_point(&self.corners[top_left]),
                     &screen.project_point(&self.corners[top_right]),
                     &screen.project_point(&self.corners[bottom_right]),
-                    &screen.project_point(&self.corners[bottom_left]),
-                    &colored_cells,
                     &color,
+                    screen,
                 ) {
-                    colored_cells.push(cell);
+                    colored_cells.insert(cell);
                 }
+
+                // Triangle 2: bottom half (use the OTHER diagonal)
+                for cell in Self::fill_triangle(
+                    &screen.project_point(&self.corners[top_left]), // ← Changed to top_left
+                    &screen.project_point(&self.corners[bottom_right]), // ← Share the diagonal
+                    &screen.project_point(&self.corners[bottom_left]),
+                    &color,
+                    screen,
+                ) {
+                    colored_cells.insert(cell);
+                }
+            }
+        }
+        //edge drawing
+        for &(from, to) in &edges {
+            let line = Line::from_to(&self.corners[from], &self.corners[to]);
+            for cell in line.draw(screen) {
+                colored_cells.insert(cell);
             }
         }
         colored_cells

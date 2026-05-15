@@ -1,11 +1,9 @@
+use std::collections::HashSet;
+
 use crate::{
-    model::elements::pos3::{self, Pos3},
+    model::elements::pos3::Pos3,
     screenspace::{
-        elements::{
-            cell_color::CellColor,
-            drawable::{self, Drawable},
-            screenspace_position::ScreenPosition,
-        },
+        elements::{cell_color::CellColor, drawable::Drawable, screenspace_position::ScreenPosition},
         screen::screen::Screen,
     },
 };
@@ -29,10 +27,10 @@ impl Dot {
     }
 }
 impl Drawable for Dot {
-    fn draw(&self, screen: &mut Screen) -> Vec<ScreenPosition> {
+    fn draw(&self, screen: &mut Screen) -> HashSet<ScreenPosition> {
         let screen_pos: ScreenPosition = screen.project_point(&self.position);
         screen.color_cell(&screen_pos, &self.color);
-        vec![screen_pos]
+        HashSet::from([screen_pos])
     }
 
     fn position(&self) -> Pos3 {

@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use crate::{
     impl_gameobject,
     model::objects::line::Line,
@@ -18,7 +20,7 @@ impl GameObjectImpl for SpinningLine {
     fn on_update(&mut self, delta_time: &f64) {}
 }
 impl Drawable for SpinningLine {
-    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> Vec<ScreenPosition> {
+    fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> HashSet<ScreenPosition> {
         self.line.draw(screen)
     }
 
