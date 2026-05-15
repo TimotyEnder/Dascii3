@@ -165,23 +165,6 @@ impl Drawable for Cube {
         screen: &mut crate::screenspace::screen::screen::Screen,
     ) -> HashSet<ScreenPosition> {
         let mut colored_cells = HashSet::new();
-        let edges = [
-            // back face (z = cz+s): 0--2, 2--6, 6--4, 4--0
-            (0, 2),
-            (2, 6),
-            (6, 4),
-            (4, 0),
-            // front face (z = cz-s): 1--3, 3--7, 7--5, 5--1
-            (1, 3),
-            (3, 7),
-            (7, 5),
-            (5, 1),
-            // connectors between front and back
-            (0, 1),
-            (2, 3),
-            (6, 7),
-            (4, 5),
-        ];
         let faces = [
             // Back face (z = cz+s)
             (4, 6, 2, 0), // top-left, top-right, bottom-right, bottom-left
@@ -196,9 +179,11 @@ impl Drawable for Cube {
             // Bottom face
             (0, 2, 3, 1), // back-bottom-left, back-bottom-right, front-bottom-right, front-bottom-left
         ];
+
         //face filling with triangles
-        if let Some(color) = self.fill_color {
-            for &(top_left, top_right, bottom_right, bottom_left) in &faces {
+
+        for &(top_left, top_right, bottom_right, bottom_left) in &faces {
+            if let Some(color) = self.fill_color {
                 // Triangle 1: top half
                 for cell in Self::fill_triangle(
                     &screen.project_point(&self.corners[top_left]),
@@ -221,14 +206,25 @@ impl Drawable for Cube {
                     colored_cells.insert(cell);
                 }
             }
-        }
-        //edge drawing
-        for &(from, to) in &edges {
-            let line = Line::from_to(&self.corners[from], &self.corners[to]);
+            //edges
+            let line = Line::from_to(&self.corners[top_left], &self.corners[top_right]);
+            for cell in line.draw(screen) {
+                colored_cells.insert(cell);
+            }
+            let line = Line::from_to(&self.corners[top_right], &self.corners[bottom_right]);
+            for cell in line.draw(screen) {
+                colored_cells.insert(cell);
+            }
+            let line = Line::from_to(&self.corners[bottom_right], &self.corners[bottom_left]);
+            for cell in line.draw(screen) {
+                colored_cells.insert(cell);
+            }
+            let line = Line::from_to(&self.corners[bottom_left], &self.corners[top_left]);
             for cell in line.draw(screen) {
                 colored_cells.insert(cell);
             }
         }
+
         colored_cells
     }
 
