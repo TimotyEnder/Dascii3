@@ -51,13 +51,25 @@ impl Pos3 {
     pub fn z(&self) -> f64 {
         self.z
     }
-    pub fn rotate(&mut self, angle_x: &f64, angle_y: &f64, angle_z: &f64) {
+    pub fn rotate_around_pivot(
+        &mut self,
+        angle_x: &f64,
+        angle_y: &f64,
+        angle_z: &f64,
+        pivot: &Pos3,
+    ) {
+        self.x -= pivot.x;
+        self.y -= pivot.y;
+        self.z -= pivot.z;
         // Rotate around X axis
         self.rotate_x(angle_x);
         // Rotate around Y axis
         self.rotate_y(angle_y);
         // Rotate around Z axis
         self.rotate_z(angle_z);
+        self.x += pivot.x;
+        self.y += pivot.y;
+        self.z += pivot.z;
     }
     fn rotate_x(&mut self, angle: &f64) {
         let cos = angle.cos();
