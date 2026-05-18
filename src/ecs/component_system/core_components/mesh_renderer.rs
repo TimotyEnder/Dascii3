@@ -1,0 +1,153 @@
+use std::{cmp::max, cmp::min, collections::HashSet};
+
+use crate::{
+    ecs::{
+        component_system::core_components::transform::{self, Transform},
+        gameobject::GameObject,
+    },
+    impl_component,
+    model::elements::{
+        mesh::{self, Mesh},
+        pos3::Pos3,
+    },
+    screenspace::{
+        elements::{cell_color::CellColor, screenspace_position::ScreenPosition},
+        screen::screen::Screen,
+    },
+};
+
+pub struct MeshRender {
+    mesh: Mesh,
+    transform: &'static Transform,
+}
+impl MeshRender {
+    pub fn with_mesh(mesh: Mesh, transform: &'static Transform) -> Self {
+        MeshRender {
+            mesh,
+            transform: transform,
+        }
+    }
+    pub fn draw(&mut self, screen: &mut Screen) {
+        let (angle_x, angle_y, angle_z) = self.transform.get_rotation();
+        let new_pos = self.transform.get_position();
+        self.mesh.translate(&new_pos);
+        self.mesh.rotate(&angle_x, &angle_y, &angle_z);
+        for vertex in self.mesh.vertices.iter() {
+            let to_draw = screen.project_point(vertex);
+            screen.color_cell(&to_draw, &self.mesh.out_line_color);
+        }
+        for (from, to) in self.mesh.edges.iter() {
+            let from_screen = screen.project_point(&self.mesh.vertices[*from]);
+            let to_screen = screen.project_point(&self.mesh.vertices[*to]);
+            bresenham_line_algorithm(&from_screen, &to_screen, screen, &self.mesh.out_line_color);
+        }
+        self.mesh.faces.sort_by(|x, y| {
+            let z_x = highest_z_from_point_list(vec![
+                self.mesh.vertices[x.0.0],
+                self.mesh.vertices[x.0.1],
+                self.mesh.vertices[x.0.2],
+            ]);
+            let z_y = highest_z_from_point_list(vec![
+                self.mesh.vertices[y.0.0],
+                self.mesh.vertices[y.0.1],
+                self.mesh.vertices[y.0.2],
+            ]);
+            z_y.partial_cmp(&z_x).unwrap_or(std::cmp::Ordering::Equal)
+        });
+        for ((one, two, three), color) in self.mesh.faces.iter() {
+            fill_triangle(
+                &screen.project_point(self.mesh.vertices[one]),
+                &screen.project_point(self.mesh.vertices[two]),
+                &screen.project_point(self.mesh.vertices[three]),
+                &color,
+                screen,
+            );
+        }
+    }
+}
+fn highest_z_from_point_list(positions: Vec<Pos3>) -> f64 {
+    let mut max_pos: f64 = 0.0;
+    for pos in positions.iter() {
+        max_pos = max(pos.z() as isize, max_pos as isize) as f64;
+    }
+    max_pos
+}
+fn bresenham_line_algorithm(
+    from: &ScreenPosition,
+    to: &ScreenPosition,
+    screen: &mut Screen,
+    color: &CellColor,
+) {
+    let dx = (to.x() as isize - from.x() as isize).abs(); //total x distance
+    let dy = (to.y() as isize - from.y() as isize).abs(); //total y distance
+    let sx = if to.x() >= from.x() { 1 } else { -1 }; //step for x
+    let sy = if to.y() >= from.y() { 1 } else { -1 }; //step for y
+    let mut err = dx - dy; //deviation from mathematical line and actual pixel position, decides next movement
+    let mut x = from.x() as isize;
+    let mut y = from.y() as isize;
+    loop {
+        let to_color = ScreenPosition::with_pos(&(x as usize), &(y as usize));
+        screen.color_cell(&to_color, color);
+
+        if x == to.x() as isize && y == to.y() as isize {
+            break;
+        }
+        //if 2*err > -dy, then take x step
+        //if 2*err < dx, then take y step
+        let e2 = 2 * err; //avoids fractions and enables the use of integer maths
+        if e2 > -dy {
+            //above the y of the current line so go forward
+            err -= dy;
+            x += sx;
+        }
+        if e2 < dx {
+            //in front of the x  so go up to be on the same height
+            err += dx;
+            y += sy;
+        }
+    }
+}
+fn fill_triangle(
+    one: &ScreenPosition,
+    two: &ScreenPosition,
+    three: &ScreenPosition,
+    fill_color: &CellColor,
+    screen: &mut Screen,
+) -> HashSet<ScreenPosition> {
+    let mut colored_cells = HashSet::new();
+    let min_x = min(min(one.x(), two.x()), three.x());
+    let min_y = min(min(one.y(), two.y()), three.y());
+    let max_x = max(max(one.x(), two.x()), three.x());
+    let max_y = max(max(one.y(), two.y()), three.y());
+    for x in min_x..max_x {
+        for y in min_y..max_y {
+            let cur_pos = ScreenPosition::with_pos(&x, &y);
+            if point_inside_triangle(one, two, three, &cur_pos) {
+                screen.color_cell(&cur_pos, fill_color);
+                colored_cells.insert(cur_pos);
+            }
+        }
+    }
+    colored_cells
+}
+fn point_inside_triangle(
+    p1: &ScreenPosition,
+    p2: &ScreenPosition,
+    p3: &ScreenPosition,
+    point: &ScreenPosition,
+) -> bool {
+    let denominator: f64 = (p2.y() as f64 - p3.y() as f64) * (p1.x() as f64 - p3.x() as f64)
+        + (p3.x() as f64 - p2.x() as f64) * (p1.y() as f64 - p3.y() as f64);
+    if denominator == 0.0 {
+        return false;
+    }
+    let a = ((p2.y() as f64 - p3.y() as f64) * (point.x() as f64 - p3.x() as f64)
+        + (p3.x() as f64 - p2.x() as f64) * (point.y() as f64 - p3.y() as f64))
+        / denominator;
+    let b = ((p3.y() as f64 - p1.y() as f64) * (point.x() as f64 - p3.x() as f64)
+        + (p1.x() as f64 - p3.x() as f64) * (point.y() as f64 - p3.y() as f64))
+        / denominator;
+    let c = 1.0 - a - b;
+    a >= 0.0 && a <= 1.0 && b >= 0.0 && b <= 1.0 && c >= 0.0 && c <= 1.0
+}
+impl_component!(MeshRender);

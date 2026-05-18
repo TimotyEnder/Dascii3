@@ -1,0 +1,42 @@
+use std::{
+    any::{Any, TypeId},
+    collections::HashMap,
+};
+
+use crate::ecs::component_system::component::Component;
+
+pub struct GameObject {
+    name: String,
+    id: usize,
+    components: HashMap<TypeId, Box<dyn Component>>,
+}
+impl GameObject {
+    pub fn new(name: &str) -> Self {
+        GameObject {
+            name: name.to_owned(),
+            id: 0,
+            components: HashMap::new(),
+        }
+    }
+    pub fn set_id(&mut self, id: &usize) {
+        self.id = *id;
+    }
+    pub fn add_component<T: Component>(&mut self, component: T) {
+        self.components
+            .insert(TypeId::of::<T>(), Box::new(component));
+        self.components
+            .get(&TypeId::of::<T>())
+            .unwrap()
+            .set_parent(&self);
+    }
+    pub fn get_component_mut<T: Component>(&mut self) -> Option<&mut T> {
+        self.components
+            .get(&TypeId::of::<T>())
+            .and_then(|boxed_value| boxed_value.as_any_mut().downcast_mut())
+    }
+    pub fn get_component<T: Component>(&self) -> Option<&T> {
+        self.components
+            .get(&TypeId::of::<T>())
+            .and_then(|boxed_value| boxed_value.as_any().downcast_ref())
+    }
+}
