@@ -56,9 +56,9 @@ impl MeshRender {
         });
         for ((one, two, three), color) in self.mesh.faces.iter() {
             fill_triangle(
-                &screen.project_point(self.mesh.vertices[one]),
-                &screen.project_point(self.mesh.vertices[two]),
-                &screen.project_point(self.mesh.vertices[three]),
+                &screen.project_point(&self.mesh.vertices[*one]),
+                &screen.project_point(&self.mesh.vertices[*two]),
+                &screen.project_point(&self.mesh.vertices[*three]),
                 &color,
                 screen,
             );

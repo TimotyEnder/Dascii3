@@ -156,15 +156,15 @@ impl Mesh {
         }
     }
     pub fn custom_polygon(
-        points: &Vec<Pos3>,
-        edges: &Vec<(usize, usize)>,
-        faces: &Vec<((usize, usize, usize), CellColor)>,
+        points: Vec<Pos3>,
+        edges: Vec<(usize, usize)>,
+        faces: Vec<((usize, usize, usize), CellColor)>,
         center: &Pos3,
     ) -> Self {
         Mesh {
-            vertices: *points,
-            edges: *edges,
-            faces: *faces,
+            vertices: points,
+            edges: edges,
+            faces: faces,
             center: *center,
             out_line_color: CellColor::WHITE,
         }

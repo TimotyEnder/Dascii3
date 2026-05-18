@@ -6,7 +6,6 @@ pub trait Component: Any + Send + Sync {
     fn as_any(&self) -> &dyn Any;
     fn as_any_mut(&mut self) -> &mut dyn Any;
     fn component_name(&self) -> &'static str;
-    fn set_parent(&mut self, gameobject: &GameObject);
 }
 #[macro_export]
 macro_rules! impl_component {
@@ -22,9 +21,6 @@ macro_rules! impl_component {
             }
             fn component_name(&self) -> &'static str {
                 std::any::type_name::<$struct_name>()
-            }
-            fn set_parent(&mut self, gameobject: &GameObject) {
-                self.parent = Some(gameobject);
             }
         }
     };

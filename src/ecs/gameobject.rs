@@ -24,14 +24,10 @@ impl GameObject {
     pub fn add_component<T: Component>(&mut self, component: T) {
         self.components
             .insert(TypeId::of::<T>(), Box::new(component));
-        self.components
-            .get(&TypeId::of::<T>())
-            .unwrap()
-            .set_parent(&self);
     }
     pub fn get_component_mut<T: Component>(&mut self) -> Option<&mut T> {
         self.components
-            .get(&TypeId::of::<T>())
+            .get_mut(&TypeId::of::<T>())
             .and_then(|boxed_value| boxed_value.as_any_mut().downcast_mut())
     }
     pub fn get_component<T: Component>(&self) -> Option<&T> {

@@ -1,28 +1,38 @@
-use crate::{ecs::gameobject::GameObject, impl_component, scene::Scene};
+use crate::{
+    ecs::gameobject::{self, GameObject},
+    impl_component,
+    scene::Scene,
+};
 
 pub struct ScriptComponent {
     pub name: String,
     pub enabled: bool,
     behavior: Box<dyn ScriptBehavior>,
+    gameobject: &'static mut GameObject,
 }
 impl ScriptComponent {
-    pub fn new<T: ScriptBehavior + 'static>(name: &str, behavior: T) -> Self {
+    pub fn new<T: ScriptBehavior + 'static>(
+        name: &str,
+        behavior: T,
+        gameobject: &'static mut GameObject,
+    ) -> Self {
         Self {
             name: name.to_string(),
             enabled: true,
             behavior: Box::new(behavior),
+            gameobject: gameobject,
         }
     }
 
-    pub fn start(&mut self, gameobject: &mut GameObject) {
+    pub fn start(&mut self) {
         if self.enabled {
-            self.behavior.start(gameobject);
+            self.behavior.start(self.gameobject);
         }
     }
 
-    pub fn update(&mut self, gameobject: &mut GameObject, delta_time: &f64) {
+    pub fn update(&mut self, delta_time: &f64) {
         if self.enabled {
-            self.behavior.update(gameobject, delta_time);
+            self.behavior.update(self.gameobject, delta_time);
         }
     }
     pub fn set_enabled(&mut self, set: bool) {

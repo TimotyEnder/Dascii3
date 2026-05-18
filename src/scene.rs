@@ -57,9 +57,8 @@ impl Scene {
     }
     fn start_objects(&mut self) {
         for (id, object) in self.gameobjects.iter_mut() {
-            let script_component = object.get_component_mut::<ScriptComponent>();
             if let Some(script_component) = object.get_component_mut::<ScriptComponent>() {
-                script_component.start(self.get_object_with_id_mut_unwrap(id));
+                script_component.start();
             }
         }
     }
@@ -67,7 +66,7 @@ impl Scene {
         for (id, object) in self.gameobjects.iter_mut() {
             let script_component = object.get_component_mut::<ScriptComponent>();
             if let Some(script_component) = object.get_component_mut::<ScriptComponent>() {
-                script_component.update(self.get_object_with_id_mut_unwrap(id), delta_time);
+                script_component.update(delta_time);
             }
         }
     }
