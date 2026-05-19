@@ -18,7 +18,7 @@ pub struct Scene {
     current_id: usize,
 }
 impl Scene {
-    pub fn with_dimensions(height: &usize, width: &usize) -> Self {
+    pub fn with_dimensions(height: usize, width: usize) -> Self {
         Self {
             screen: Screen::with_dimensions(height, width),
             gameobjects: HashMap::new(),
@@ -32,19 +32,19 @@ impl Scene {
         self.gameobjects
             .get_mut(&self.current_id)
             .unwrap()
-            .set_id(&self.current_id);
+            .set_id(self.current_id);
     }
-    pub fn add_script(&mut self, script: ScriptComponent, gameobject_id: &usize) {
-        self.scripts.insert(*gameobject_id, script);
+    pub fn add_script(&mut self, script: ScriptComponent, gameobject_id: usize) {
+        self.scripts.insert(gameobject_id, script);
     }
-    pub fn run(&mut self, fps: &u64) {
-        let sleep_time: Duration = Duration::from_secs_f64(1.0 / *fps as f64);
-        let delta_time: f64 = 1.0 / *fps as f64;
+    pub fn run(&mut self, fps: u64) {
+        let sleep_time: Duration = Duration::from_secs_f64(1.0 / fps as f64);
+        let delta_time: f64 = 1.0 / fps as f64;
         print!("\x1B[?1049h\x1B[?25l");
         io::stdout().flush().unwrap();
         self.start_objects();
         loop {
-            self.update_objects(&delta_time);
+            self.update_objects(delta_time);
             self.draw_objects();
             self.screen.draw_and_flush();
             sleep(sleep_time);
@@ -62,7 +62,7 @@ impl Scene {
             script.start(self.gameobjects.get_mut(id).unwrap());
         }
     }
-    fn update_objects(&mut self, delta_time: &f64) {
+    fn update_objects(&mut self, delta_time: f64) {
         for (id, script) in &mut self.scripts {
             script.update(self.gameobjects.get_mut(id).unwrap(), delta_time);
         }

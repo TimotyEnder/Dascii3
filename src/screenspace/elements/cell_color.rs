@@ -20,12 +20,8 @@ impl CellColor {
         b: 0 as u8,
         g: 0 as u8,
     };
-    pub fn from_rgb(r: &u8, g: &u8, b: &u8) -> Self {
-        Self {
-            r: *r,
-            g: *g,
-            b: *b,
-        }
+    pub fn from_rgb(r: u8, g: u8, b: u8) -> Self {
+        Self { r, g, b }
     }
     pub fn r(&self) -> u8 {
         self.r

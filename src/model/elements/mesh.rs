@@ -37,7 +37,7 @@ impl Mesh {
             out_line_color: CellColor::WHITE,
         }
     }
-    pub fn cube(center: &Pos3, x_size: &f64, y_size: &f64, z_size: &f64) -> Self {
+    pub fn cube(center: &Pos3, x_size: f64, y_size: f64, z_size: f64) -> Self {
         let half_x = x_size / 2.0;
         let half_y = y_size / 2.0;
         let half_z = z_size / 2.0;
@@ -46,51 +46,51 @@ impl Mesh {
             vertices: vec![
                 // 0: Front-top-right (x+, y+, z+)
                 Pos3::new(
-                    &(center.x() + half_x),
-                    &(center.y() + half_y),
-                    &(center.z() + half_z),
+                    center.x() + half_x,
+                    center.y() + half_y,
+                    center.z() + half_z,
                 ),
                 // 1: Back-top-right (x+, y+, z-)
                 Pos3::new(
-                    &(center.x() + half_x),
-                    &(center.y() + half_y),
-                    &(center.z() - half_z),
+                    center.x() + half_x,
+                    center.y() + half_y,
+                    center.z() - half_z,
                 ),
                 // 2: Front-bottom-right (x+, y-, z+)
                 Pos3::new(
-                    &(center.x() + half_x),
-                    &(center.y() - half_y),
-                    &(center.z() + half_z),
+                    center.x() + half_x,
+                    center.y() - half_y,
+                    center.z() + half_z,
                 ),
                 // 3: Back-bottom-right (x+, y-, z-)
                 Pos3::new(
-                    &(center.x() + half_x),
-                    &(center.y() - half_y),
-                    &(center.z() - half_z),
+                    center.x() + half_x,
+                    center.y() - half_y,
+                    center.z() - half_z,
                 ),
                 // 4: Front-top-left (x-, y+, z+)
                 Pos3::new(
-                    &(center.x() - half_x),
-                    &(center.y() + half_y),
-                    &(center.z() + half_z),
+                    center.x() - half_x,
+                    center.y() + half_y,
+                    center.z() + half_z,
                 ),
                 // 5: Back-top-left (x-, y+, z-)
                 Pos3::new(
-                    &(center.x() - half_x),
-                    &(center.y() + half_y),
-                    &(center.z() - half_z),
+                    center.x() - half_x,
+                    center.y() + half_y,
+                    center.z() - half_z,
                 ),
                 // 6: Front-bottom-left (x-, y-, z+)
                 Pos3::new(
-                    &(center.x() - half_x),
-                    &(center.y() - half_y),
-                    &(center.z() + half_z),
+                    center.x() - half_x,
+                    center.y() - half_y,
+                    center.z() + half_z,
                 ),
                 // 7: Back-bottom-left (x-, y-, z-)
                 Pos3::new(
-                    &(center.x() - half_x),
-                    &(center.y() - half_y),
-                    &(center.z() - half_z),
+                    center.x() - half_x,
+                    center.y() - half_y,
+                    center.z() - half_z,
                 ),
             ],
             edges: vec![
@@ -169,7 +169,7 @@ impl Mesh {
             out_line_color: CellColor::WHITE,
         }
     }
-    pub fn rotate(&mut self, angle_x: &f64, angle_y: &f64, angle_z: &f64) {
+    pub fn rotate(&mut self, angle_x: f64, angle_y: f64, angle_z: f64) {
         for corner in self.vertices.iter_mut() {
             corner.rotate_around_pivot(angle_x, angle_y, angle_z, &self.center);
         }
@@ -182,14 +182,14 @@ impl Mesh {
         );
         self.center = Pos3::from(*point);
         for vertex in self.vertices.iter_mut() {
-            vertex.translate(&vector);
+            vertex.translate(vector);
         }
     }
 }
 fn mid_point_in_line(from: &Pos3, to: &Pos3) -> Pos3 {
     Pos3::new(
-        &(from.x() + to.x() / 2.0),
-        &(from.y() + to.y() / 2.0),
-        &(from.z() + to.z() / 2.0),
+        from.x() + to.x() / 2.0,
+        from.y() + to.y() / 2.0,
+        from.z() + to.z() / 2.0,
     )
 }

@@ -35,12 +35,8 @@ impl Default for Pos3 {
     }
 }
 impl Pos3 {
-    pub fn new(x: &f64, y: &f64, z: &f64) -> Self {
-        Self {
-            x: *x,
-            y: *y,
-            z: *z,
-        }
+    pub fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { x, y, z }
     }
     pub fn x(&self) -> f64 {
         self.x
@@ -53,9 +49,9 @@ impl Pos3 {
     }
     pub fn rotate_around_pivot(
         &mut self,
-        angle_x: &f64,
-        angle_y: &f64,
-        angle_z: &f64,
+        angle_x: f64,
+        angle_y: f64,
+        angle_z: f64,
         pivot: &Pos3,
     ) {
         self.x -= pivot.x;
@@ -71,12 +67,12 @@ impl Pos3 {
         self.y += pivot.y;
         self.z += pivot.z;
     }
-    pub fn translate(&mut self, vector: &(f64, f64, f64)) {
+    pub fn translate(&mut self, vector: (f64, f64, f64)) {
         self.x += vector.0;
         self.y += vector.1;
         self.z += vector.2;
     }
-    fn rotate_x(&mut self, angle: &f64) {
+    fn rotate_x(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
 
@@ -84,7 +80,7 @@ impl Pos3 {
         self.y = self.y * cos - self.z * sin;
         self.z = old_y * sin + self.z * cos;
     }
-    fn rotate_y(&mut self, angle: &f64) {
+    fn rotate_y(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
 
@@ -92,7 +88,7 @@ impl Pos3 {
         self.x = self.x * cos + self.z * sin;
         self.z = -old_x * sin + self.z * cos;
     }
-    fn rotate_z(&mut self, angle: &f64) {
+    fn rotate_z(&mut self, angle: f64) {
         let cos = angle.cos();
         let sin = angle.sin();
 

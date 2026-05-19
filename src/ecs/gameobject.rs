@@ -18,8 +18,8 @@ impl GameObject {
             components: HashMap::new(),
         }
     }
-    pub fn set_id(&mut self, id: &usize) {
-        self.id = *id;
+    pub fn set_id(&mut self, id: usize) {
+        self.id = id;
     }
     pub fn get_id(&self) -> usize {
         self.id

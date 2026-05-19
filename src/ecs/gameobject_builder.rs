@@ -22,7 +22,7 @@ impl GameObjectBuilder {
         self
     }
     pub fn add_script(self, script_component: ScriptComponent, scene: &mut Scene) -> Self {
-        scene.add_script(script_component, &self.gameobject.get_id());
+        scene.add_script(script_component, self.gameobject.get_id());
         self
     }
     pub fn finish(self) -> GameObject {

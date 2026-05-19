@@ -17,7 +17,7 @@ impl SpinningLine {
 impl GameObjectImpl for SpinningLine {
     fn on_start(&mut self) {}
 
-    fn on_update(&mut self, delta_time: &f64) {}
+    fn on_update(&mut self, delta_time: f64) {}
 }
 impl Drawable for SpinningLine {
     fn draw(&self, screen: &mut crate::screenspace::screen::screen::Screen) -> HashSet<ScreenPosition> {

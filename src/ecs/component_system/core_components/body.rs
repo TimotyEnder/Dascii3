@@ -27,7 +27,7 @@ impl Body {
         let (angle_x, angle_y, angle_z) = self.rotation;
         let new_pos = self.position;
         self.mesh.translate(&new_pos);
-        self.mesh.rotate(&angle_x, &angle_y, &angle_z);
+        self.mesh.rotate(angle_x, angle_y, angle_z);
         for vertex in self.mesh.vertices.iter() {
             let to_draw = screen.project_point(vertex);
             screen.color_cell(&to_draw, &self.mesh.out_line_color);
@@ -82,7 +82,7 @@ fn bresenham_line_algorithm(
     let mut x = from.x() as isize;
     let mut y = from.y() as isize;
     loop {
-        let to_color = ScreenPosition::with_pos(&(x as usize), &(y as usize));
+        let to_color = ScreenPosition::with_pos(x as usize, y as usize);
         screen.color_cell(&to_color, color);
 
         if x == to.x() as isize && y == to.y() as isize {
@@ -117,7 +117,7 @@ fn fill_triangle(
     let max_y = max(max(one.y(), two.y()), three.y());
     for x in min_x..max_x {
         for y in min_y..max_y {
-            let cur_pos = ScreenPosition::with_pos(&x, &y);
+            let cur_pos = ScreenPosition::with_pos(x, y);
             if point_inside_triangle(one, two, three, &cur_pos) {
                 screen.color_cell(&cur_pos, fill_color);
                 colored_cells.insert(cur_pos);

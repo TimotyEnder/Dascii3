@@ -24,7 +24,7 @@ impl ScriptComponent {
         }
     }
 
-    pub fn update(&mut self, gameobject: &mut GameObject, delta_time: &f64) {
+    pub fn update(&mut self, gameobject: &mut GameObject, delta_time: f64) {
         if self.enabled {
             self.behavior.update(gameobject, delta_time);
         }
@@ -35,5 +35,5 @@ impl ScriptComponent {
 }
 pub trait ScriptBehavior: Send + Sync {
     fn start(&mut self, gameobject: &mut GameObject);
-    fn update(&mut self, gameobject: &mut GameObject, delta_time: &f64);
+    fn update(&mut self, gameobject: &mut GameObject, delta_time: f64);
 }

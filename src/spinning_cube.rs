@@ -29,12 +29,12 @@ impl Drawable for SpinningCube {
 impl GameObjectImpl for SpinningCube {
     fn on_start(&mut self) {}
 
-    fn on_update(&mut self, delta_time: &f64) {
+    fn on_update(&mut self, delta_time: f64) {
         let rotation_speed = 90.0_f64.to_radians(); // 90 degrees per second
-        let rotation_amount: f64 = rotation_speed * *delta_time;
+        let rotation_amount: f64 = rotation_speed * delta_time;
 
         self.cube
-            .rotate(&rotation_amount, &rotation_amount, &rotation_amount);
+            .rotate(rotation_amount, rotation_amount, rotation_amount);
     }
 }
 impl_gameobject! {SpinningCube}
