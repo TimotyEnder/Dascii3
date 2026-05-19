@@ -62,7 +62,7 @@ impl Body {
     }
 }
 fn highest_z_from_point_list(positions: Vec<Pos3>) -> f64 {
-    let mut max_pos: f64 = 0.0;
+    let mut max_pos: f64 = f64::NEG_INFINITY;
     for pos in positions.iter() {
         max_pos = max(pos.z() as isize, max_pos as isize) as f64;
     }

@@ -97,59 +97,47 @@ impl Mesh {
                 (4, 6),
                 (6, 2),
                 (2, 0),
-                (0, 4), // Back face (z = cz+s)
+                (0, 4), // Front face (z+)
                 (5, 7),
                 (7, 3),
                 (3, 1),
-                (1, 5), // Front face (z = cz-s)
+                (1, 5), // Back face (z-)
                 (4, 0),
                 (0, 1),
                 (1, 5),
-                (5, 4), // Left face
+                (5, 4), // Top face (y+)
                 (6, 2),
                 (2, 3),
                 (3, 7),
-                (7, 6), // Right face
+                (7, 6), // Bottom face (y-)
                 (4, 6),
                 (6, 7),
                 (7, 5),
-                (5, 4), // Top face
+                (5, 4), // Left face (x-)
                 (0, 2),
                 (2, 3),
                 (3, 1),
-                (1, 0), // Bottom face
+                (1, 0), // Right face (x+)
             ],
             faces: vec![
-                // Back face (z = cz+s) - split into two triangles
-                // Triangle 1: vertices 4, 6, 2
-                ((4, 6, 2), CellColor::default()),
-                // Triangle 2: vertices 4, 2, 0
-                ((4, 2, 0), CellColor::default()),
-                // Front face (z = cz-s) - split into two triangles
-                // Triangle 1: vertices 5, 7, 3
-                ((5, 7, 3), CellColor::default()),
-                // Triangle 2: vertices 5, 3, 1
-                ((5, 3, 1), CellColor::default()),
-                // Left face (connecting 4-0 and 5-1) - split into two triangles
-                // Triangle 1: vertices 4, 0, 1
-                ((4, 0, 1), CellColor::default()),
-                // Triangle 2: vertices 4, 1, 5
-                ((4, 1, 5), CellColor::default()),
-                // Right face (connecting 6-2 and 7-3) - split into two triangles
-                // Triangle 1: vertices 6, 2, 3
-                ((6, 2, 3), CellColor::default()),
-                // Triangle 2: vertices 6, 3, 7
-                ((6, 3, 7), CellColor::default()),
-                // Top face - split into two triangles
-                // Triangle 1: vertices 4, 6, 7
-                ((4, 6, 7), CellColor::default()),
-                // Triangle 2: vertices 4, 7, 5
-                ((4, 7, 5), CellColor::default()),
-                // Bottom face - split into two triangles
-                // Triangle 1: vertices 0, 2, 3
-                ((0, 2, 3), CellColor::default()),
-                // Triangle 2: vertices 0, 3, 1
-                ((0, 3, 1), CellColor::default()),
+                // Front face (z+) - split into two triangles
+                ((4, 6, 2), CellColor::RED),
+                ((4, 2, 0), CellColor::RED),
+                // Back face (z-) - split into two triangles
+                ((5, 7, 3), CellColor::RED),
+                ((5, 3, 1), CellColor::RED),
+                // Top face (y+) - split into two triangles
+                ((4, 0, 1), CellColor::RED),
+                ((4, 1, 5), CellColor::RED),
+                // Bottom face (y-) - split into two triangles
+                ((6, 2, 3), CellColor::RED),
+                ((6, 3, 7), CellColor::RED),
+                // Left face (x-) - split into two triangles
+                ((4, 6, 7), CellColor::RED),
+                ((4, 7, 5), CellColor::RED),
+                // Right face (x+) - split into two triangles
+                ((0, 2, 3), CellColor::RED),
+                ((0, 3, 1), CellColor::RED),
             ],
             center: *center,
             out_line_color: CellColor::WHITE,
@@ -188,8 +176,8 @@ impl Mesh {
 }
 fn mid_point_in_line(from: &Pos3, to: &Pos3) -> Pos3 {
     Pos3::new(
-        from.x() + to.x() / 2.0,
-        from.y() + to.y() / 2.0,
-        from.z() + to.z() / 2.0,
+        (from.x() + to.x()) / 2.0,
+        (from.y() + to.y()) / 2.0,
+        (from.z() + to.z()) / 2.0,
     )
 }
