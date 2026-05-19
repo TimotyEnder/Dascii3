@@ -1,24 +1,12 @@
 use crate::model::elements::pos3::Pos3;
 #[derive(Hash, Clone, Copy, Eq)]
 pub struct ScreenPosition {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
 }
 impl ScreenPosition {
     pub fn with_pos(x: usize, y: usize) -> Self {
         Self { x, y }
-    }
-    pub fn x(&self) -> usize {
-        self.x
-    }
-    pub fn y(&self) -> usize {
-        self.y
-    }
-    pub fn set_x(&mut self, x: usize) {
-        self.x = x;
-    }
-    pub fn set_y(&mut self, y: usize) {
-        self.y = y;
     }
 }
 impl PartialEq for ScreenPosition {

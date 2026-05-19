@@ -1,4 +1,7 @@
-use std::{cmp::max, cmp::min, collections::HashSet};
+use std::{
+    cmp::{max, min},
+    collections::HashSet,
+};
 
 use crate::{
     impl_component,
@@ -22,6 +25,17 @@ impl Body {
             position: pos,
             rotation: rotation,
         }
+    }
+
+    pub fn translate(&mut self, x: f64, y: f64, z: f64) {
+        self.position.x += x;
+        self.position.y += y;
+        self.position.z += z;
+    }
+    pub fn rotate(&mut self, rotation: (f64, f64, f64)) {
+        self.rotation.0 += rotation.0;
+        self.rotation.1 += rotation.1;
+        self.rotation.2 += rotation.2;
     }
     pub fn draw(&mut self, screen: &mut Screen) {
         let (angle_x, angle_y, angle_z) = self.rotation;
@@ -66,7 +80,7 @@ impl Body {
 fn highest_z_from_point_list(positions: Vec<Pos3>) -> f64 {
     let mut max_pos: f64 = f64::NEG_INFINITY;
     for pos in positions.iter() {
-        max_pos = max(pos.z() as isize, max_pos as isize) as f64;
+        max_pos = max(pos.z as isize, max_pos as isize) as f64;
     }
     max_pos
 }
@@ -76,18 +90,18 @@ fn bresenham_line_algorithm(
     screen: &mut Screen,
     color: &CellColor,
 ) {
-    let dx = (to.x() as isize - from.x() as isize).abs(); //total x distance
-    let dy = (to.y() as isize - from.y() as isize).abs(); //total y distance
-    let sx = if to.x() >= from.x() { 1 } else { -1 }; //step for x
-    let sy = if to.y() >= from.y() { 1 } else { -1 }; //step for y
+    let dx = (to.x as isize - from.x as isize).abs(); //total x distance
+    let dy = (to.y as isize - from.y as isize).abs(); //total y distance
+    let sx = if to.x >= from.x { 1 } else { -1 }; //step for x
+    let sy = if to.y >= from.y { 1 } else { -1 }; //step for y
     let mut err = dx - dy; //deviation from mathematical line and actual pixel position, decides next movement
-    let mut x = from.x() as isize;
-    let mut y = from.y() as isize;
+    let mut x = from.x as isize;
+    let mut y = from.y as isize;
     loop {
         let to_color = ScreenPosition::with_pos(x as usize, y as usize);
         screen.color_cell(&to_color, color);
 
-        if x == to.x() as isize && y == to.y() as isize {
+        if x == to.x as isize && y == to.y as isize {
             break;
         }
         //if 2*err > -dy, then take x step
@@ -113,10 +127,10 @@ fn fill_triangle(
     screen: &mut Screen,
 ) -> HashSet<ScreenPosition> {
     let mut colored_cells = HashSet::new();
-    let min_x = min(min(one.x(), two.x()), three.x());
-    let min_y = min(min(one.y(), two.y()), three.y());
-    let max_x = max(max(one.x(), two.x()), three.x());
-    let max_y = max(max(one.y(), two.y()), three.y());
+    let min_x = min(min(one.x, two.x), three.x);
+    let min_y = min(min(one.y, two.y), three.y);
+    let max_x = max(max(one.x, two.x), three.x);
+    let max_y = max(max(one.y, two.y), three.y);
     for x in min_x..max_x {
         for y in min_y..max_y {
             let cur_pos = ScreenPosition::with_pos(x, y);
@@ -134,16 +148,16 @@ fn point_inside_triangle(
     p3: &ScreenPosition,
     point: &ScreenPosition,
 ) -> bool {
-    let denominator: f64 = (p2.y() as f64 - p3.y() as f64) * (p1.x() as f64 - p3.x() as f64)
-        + (p3.x() as f64 - p2.x() as f64) * (p1.y() as f64 - p3.y() as f64);
+    let denominator: f64 = (p2.y as f64 - p3.y as f64) * (p1.x as f64 - p3.x as f64)
+        + (p3.x as f64 - p2.x as f64) * (p1.y as f64 - p3.y as f64);
     if denominator == 0.0 {
         return false;
     }
-    let a = ((p2.y() as f64 - p3.y() as f64) * (point.x() as f64 - p3.x() as f64)
-        + (p3.x() as f64 - p2.x() as f64) * (point.y() as f64 - p3.y() as f64))
+    let a = ((p2.y as f64 - p3.y as f64) * (point.x as f64 - p3.x as f64)
+        + (p3.x as f64 - p2.x as f64) * (point.y as f64 - p3.y as f64))
         / denominator;
-    let b = ((p3.y() as f64 - p1.y() as f64) * (point.x() as f64 - p3.x() as f64)
-        + (p1.x() as f64 - p3.x() as f64) * (point.y() as f64 - p3.y() as f64))
+    let b = ((p3.y as f64 - p1.y as f64) * (point.x as f64 - p3.x as f64)
+        + (p1.x as f64 - p3.x as f64) * (point.y as f64 - p3.y as f64))
         / denominator;
     let c = 1.0 - a - b;
     a >= 0.0 && a <= 1.0 && b >= 0.0 && b <= 1.0 && c >= 0.0 && c <= 1.0

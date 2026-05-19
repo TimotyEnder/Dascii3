@@ -1,40 +1,20 @@
-use std::collections::HashSet;
+use crate::ecs::component_system::core_components::{body::Body, script_component::ScriptBehavior};
 
-use crate::{
-    impl_gameobject,
-    model::objects::cube::Cube,
-    screenspace::elements::{drawable::Drawable, screenspace_position::ScreenPosition},
-};
-
-pub struct SpinningCube {
-    cube: Cube,
-}
+pub struct SpinningCube {}
 impl SpinningCube {
-    pub fn new(cube: Cube) -> Self {
-        Self { cube: cube }
+    pub fn new() -> Self {
+        Self {}
     }
 }
-impl Drawable for SpinningCube {
-    fn draw(
-        &self,
-        screen: &mut crate::screenspace::screen::screen::Screen,
-    ) -> HashSet<ScreenPosition> {
-        self.cube.draw(screen)
-    }
+impl ScriptBehavior for SpinningCube {
+    fn start(&mut self, gameobject: &mut crate::ecs::gameobject::GameObject) {}
 
-    fn position(&self) -> crate::model::elements::pos3::Pos3 {
-        self.cube.position()
-    }
-}
-impl GameObjectImpl for SpinningCube {
-    fn on_start(&mut self) {}
-
-    fn on_update(&mut self, delta_time: f64) {
+    fn update(&mut self, gameobject: &mut crate::ecs::gameobject::GameObject, delta_time: f64) {
         let rotation_speed = 90.0_f64.to_radians(); // 90 degrees per second
         let rotation_amount: f64 = rotation_speed * delta_time;
 
-        self.cube
-            .rotate(rotation_amount, rotation_amount, rotation_amount);
+        if let Some(body) = gameobject.get_component_mut::<Body>() {
+            body.rotate((rotation_amount, rotation_amount, rotation_amount));
+        }
     }
 }
-impl_gameobject! {SpinningCube}

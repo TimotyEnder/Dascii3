@@ -51,53 +51,21 @@ impl Mesh {
         Mesh {
             vertices: vec![
                 // 0: Front-top-right (x+, y+, z+)
-                Pos3::new(
-                    center.x() + half_x,
-                    center.y() + half_y,
-                    center.z() + half_z,
-                ),
+                Pos3::new(center.x + half_x, center.y + half_y, center.z + half_z),
                 // 1: Back-top-right (x+, y+, z-)
-                Pos3::new(
-                    center.x() + half_x,
-                    center.y() + half_y,
-                    center.z() - half_z,
-                ),
+                Pos3::new(center.x + half_x, center.y + half_y, center.z - half_z),
                 // 2: Front-bottom-right (x+, y-, z+)
-                Pos3::new(
-                    center.x() + half_x,
-                    center.y() - half_y,
-                    center.z() + half_z,
-                ),
+                Pos3::new(center.x + half_x, center.y - half_y, center.z + half_z),
                 // 3: Back-bottom-right (x+, y-, z-)
-                Pos3::new(
-                    center.x() + half_x,
-                    center.y() - half_y,
-                    center.z() - half_z,
-                ),
+                Pos3::new(center.x + half_x, center.y - half_y, center.z - half_z),
                 // 4: Front-top-left (x-, y+, z+)
-                Pos3::new(
-                    center.x() - half_x,
-                    center.y() + half_y,
-                    center.z() + half_z,
-                ),
+                Pos3::new(center.x - half_x, center.y + half_y, center.z + half_z),
                 // 5: Back-top-left (x-, y+, z-)
-                Pos3::new(
-                    center.x() - half_x,
-                    center.y() + half_y,
-                    center.z() - half_z,
-                ),
+                Pos3::new(center.x - half_x, center.y + half_y, center.z - half_z),
                 // 6: Front-bottom-left (x-, y-, z+)
-                Pos3::new(
-                    center.x() - half_x,
-                    center.y() - half_y,
-                    center.z() + half_z,
-                ),
+                Pos3::new(center.x - half_x, center.y - half_y, center.z + half_z),
                 // 7: Back-bottom-left (x-, y-, z-)
-                Pos3::new(
-                    center.x() - half_x,
-                    center.y() - half_y,
-                    center.z() - half_z,
-                ),
+                Pos3::new(center.x - half_x, center.y - half_y, center.z - half_z),
             ],
             edges: vec![
                 (4, 6),
@@ -170,9 +138,9 @@ impl Mesh {
     }
     pub fn translate(&mut self, point: &Pos3) {
         let vector = (
-            point.x() - self.center.x(),
-            point.y() - self.center.y(),
-            point.z() - self.center.z(),
+            point.x - self.center.x,
+            point.y - self.center.y,
+            point.z - self.center.z,
         );
         self.center = Pos3::from(*point);
         for vertex in self.vertices.iter_mut() {
@@ -182,8 +150,8 @@ impl Mesh {
 }
 fn mid_point_in_line(from: &Pos3, to: &Pos3) -> Pos3 {
     Pos3::new(
-        (from.x() + to.x()) / 2.0,
-        (from.y() + to.y()) / 2.0,
-        (from.z() + to.z()) / 2.0,
+        (from.x + to.x) / 2.0,
+        (from.y + to.y) / 2.0,
+        (from.z + to.z) / 2.0,
     )
 }

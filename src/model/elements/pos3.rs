@@ -2,9 +2,9 @@ use std::hash::{Hash, Hasher};
 
 #[derive(Copy, Clone)]
 pub struct Pos3 {
-    x: f64,
-    y: f64,
-    z: f64,
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
 }
 
 impl PartialEq for Pos3 {
@@ -38,22 +38,7 @@ impl Pos3 {
     pub fn new(x: f64, y: f64, z: f64) -> Self {
         Self { x, y, z }
     }
-    pub fn x(&self) -> f64 {
-        self.x
-    }
-    pub fn y(&self) -> f64 {
-        self.y
-    }
-    pub fn z(&self) -> f64 {
-        self.z
-    }
-    pub fn rotate_around_pivot(
-        &mut self,
-        angle_x: f64,
-        angle_y: f64,
-        angle_z: f64,
-        pivot: &Pos3,
-    ) {
+    pub fn rotate_around_pivot(&mut self, angle_x: f64, angle_y: f64, angle_z: f64, pivot: &Pos3) {
         self.x -= pivot.x;
         self.y -= pivot.y;
         self.z -= pivot.z;
