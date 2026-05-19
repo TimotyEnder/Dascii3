@@ -5,7 +5,7 @@ use crate::{model::elements::pos3::Pos3, screenspace::elements::cell_color::Cell
 pub struct Mesh {
     pub vertices: Vec<Pos3>,
     pub edges: Vec<(usize, usize)>,
-    pub faces: Vec<((usize, usize, usize), CellColor)>,
+    pub faces: Vec<((usize, usize, usize), Option<CellColor>)>,
     pub center: Pos3,
     pub out_line_color: CellColor,
 }
@@ -37,7 +37,13 @@ impl Mesh {
             out_line_color: CellColor::WHITE,
         }
     }
-    pub fn cube(center: &Pos3, x_size: f64, y_size: f64, z_size: f64) -> Self {
+    pub fn cube(
+        center: &Pos3,
+        x_size: f64,
+        y_size: f64,
+        z_size: f64,
+        fill_color: Option<CellColor>,
+    ) -> Self {
         let half_x = x_size / 2.0;
         let half_y = y_size / 2.0;
         let half_z = z_size / 2.0;
@@ -121,23 +127,23 @@ impl Mesh {
             ],
             faces: vec![
                 // Front face (z+) - split into two triangles
-                ((4, 6, 2), CellColor::RED),
-                ((4, 2, 0), CellColor::RED),
+                ((4, 6, 2), fill_color),
+                ((4, 2, 0), fill_color),
                 // Back face (z-) - split into two triangles
-                ((5, 7, 3), CellColor::RED),
-                ((5, 3, 1), CellColor::RED),
+                ((5, 7, 3), fill_color),
+                ((5, 3, 1), fill_color),
                 // Top face (y+) - split into two triangles
-                ((4, 0, 1), CellColor::RED),
-                ((4, 1, 5), CellColor::RED),
+                ((4, 0, 1), fill_color),
+                ((4, 1, 5), fill_color),
                 // Bottom face (y-) - split into two triangles
-                ((6, 2, 3), CellColor::RED),
-                ((6, 3, 7), CellColor::RED),
+                ((6, 2, 3), fill_color),
+                ((6, 3, 7), fill_color),
                 // Left face (x-) - split into two triangles
-                ((4, 6, 7), CellColor::RED),
-                ((4, 7, 5), CellColor::RED),
+                ((4, 6, 7), fill_color),
+                ((4, 7, 5), fill_color),
                 // Right face (x+) - split into two triangles
-                ((0, 2, 3), CellColor::RED),
-                ((0, 3, 1), CellColor::RED),
+                ((0, 2, 3), fill_color),
+                ((0, 3, 1), fill_color),
             ],
             center: *center,
             out_line_color: CellColor::WHITE,
@@ -146,7 +152,7 @@ impl Mesh {
     pub fn custom_polygon(
         points: Vec<Pos3>,
         edges: Vec<(usize, usize)>,
-        faces: Vec<((usize, usize, usize), CellColor)>,
+        faces: Vec<((usize, usize, usize), Option<CellColor>)>,
         center: &Pos3,
     ) -> Self {
         Mesh {

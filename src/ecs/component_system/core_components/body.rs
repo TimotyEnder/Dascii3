@@ -50,14 +50,16 @@ impl Body {
             ]);
             z_y.partial_cmp(&z_x).unwrap_or(std::cmp::Ordering::Equal)
         });
-        for ((one, two, three), color) in self.mesh.faces.iter() {
-            fill_triangle(
-                &screen.project_point(&self.mesh.vertices[*one]),
-                &screen.project_point(&self.mesh.vertices[*two]),
-                &screen.project_point(&self.mesh.vertices[*three]),
-                &color,
-                screen,
-            );
+        for ((one, two, three), optcolor) in self.mesh.faces.iter() {
+            if let Some(color) = optcolor {
+                fill_triangle(
+                    &screen.project_point(&self.mesh.vertices[*one]),
+                    &screen.project_point(&self.mesh.vertices[*two]),
+                    &screen.project_point(&self.mesh.vertices[*three]),
+                    &color,
+                    screen,
+                );
+            }
         }
     }
 }
