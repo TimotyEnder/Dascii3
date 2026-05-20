@@ -1,8 +1,4 @@
-use crate::{
-    ecs::gameobject::{self, GameObject},
-    impl_component,
-    scene::Scene,
-};
+use crate::ecs::gameobject::{self, GameObject};
 
 pub struct ScriptComponent {
     pub name: String,

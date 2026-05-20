@@ -6,8 +6,7 @@ use crate::{
         },
         gameobject::{self, GameObject},
     },
-    model::elements::pos3::Pos3,
-    screenspace::{elements::drawable::Drawable, screen::screen::Screen},
+    screenspace::screen::screen::Screen,
 }; // Add this line
 use std::io::{self, Write};
 use std::{collections::HashMap, thread::sleep, time::Duration};
@@ -15,7 +14,6 @@ pub struct Scene {
     screen: Screen,
     gameobjects: HashMap<usize, GameObject>,
     scripts: HashMap<usize, ScriptComponent>,
-    current_id: usize,
 }
 impl Scene {
     pub fn with_dimensions(height: usize, width: usize) -> Self {
@@ -23,16 +21,10 @@ impl Scene {
             screen: Screen::with_dimensions(height, width),
             gameobjects: HashMap::new(),
             scripts: HashMap::new(),
-            current_id: 0,
         }
     }
     pub fn add_object(&mut self, object: GameObject) {
-        self.current_id += 1;
-        self.gameobjects.insert(self.current_id, object);
-        self.gameobjects
-            .get_mut(&self.current_id)
-            .unwrap()
-            .set_id(self.current_id);
+        self.gameobjects.insert(object.get_id(), object);
     }
     pub fn add_script(&mut self, script: ScriptComponent, gameobject_id: usize) {
         self.scripts.insert(gameobject_id, script);

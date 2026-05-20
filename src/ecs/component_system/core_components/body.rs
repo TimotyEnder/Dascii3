@@ -16,6 +16,7 @@ pub struct Body {
     mesh: Mesh,
     position: Pos3,
     rotation: (f64, f64, f64),
+    mesh_rotation: (f64, f64, f64),
 }
 impl Body {
     pub fn with_mesh(mesh: Mesh, rotation: (f64, f64, f64)) -> Self {
@@ -24,6 +25,7 @@ impl Body {
             mesh: mesh,
             position: pos,
             rotation: rotation,
+            mesh_rotation: (0.0, 0.0, 0.0),
         }
     }
 
@@ -33,15 +35,22 @@ impl Body {
         self.position.z += z;
     }
     pub fn rotate(&mut self, rotation: (f64, f64, f64)) {
-        self.rotation.0 += rotation.0;
-        self.rotation.1 += rotation.1;
-        self.rotation.2 += rotation.2;
+        self.rotation.0 = (self.rotation.0 + rotation.0) % 360.0;
+        self.rotation.1 = (self.rotation.1 + rotation.1) % 360.0;
+        self.rotation.2 = (self.rotation.2 + rotation.2) % 360.0;
     }
     pub fn draw(&mut self, screen: &mut Screen) {
         let (angle_x, angle_y, angle_z) = self.rotation;
+        let (mesh_angle_x, mesh_angle_y, mesh_angle_z) = self.mesh_rotation;
+        let to_rotate = (
+            (angle_x - mesh_angle_x).abs(),
+            (angle_y - mesh_angle_y).abs(),
+            (angle_z - mesh_angle_z).abs(),
+        );
         let new_pos = self.position;
         self.mesh.translate(&new_pos);
-        self.mesh.rotate(angle_x, angle_y, angle_z);
+        self.mesh.rotate(to_rotate.0, to_rotate.1, to_rotate.2);
+        self.mesh_rotation = self.rotation;
         for vertex in self.mesh.vertices.iter() {
             let to_draw = screen.project_point(vertex);
             screen.color_cell(&to_draw, &self.mesh.out_line_color);
